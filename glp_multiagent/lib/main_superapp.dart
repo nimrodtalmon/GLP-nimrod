@@ -50,6 +50,7 @@ import 'scripted_person.dart';
 import 'superapp_host.dart';
 import 'ui_runtime/agent_surface.dart';
 import 'ui_runtime/look.dart';
+import 'ui_runtime/plain_look.dart';
 
 /// The persona's name in the seed of the agent's key pair, made once at the
 /// first start (IGLP, Implementation Notes, "Boot").
@@ -57,6 +58,9 @@ const String _persona = 'person';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // The app opens in plain words; the bar's button shows the names as the
+  // program writes them (ui_runtime/plain_look.dart).
+  plainLook.value = true;
   // Before runApp, so that the addresses the phone hands the app reach the
   // links before the app's navigator (invitation_link.dart, [InvitationLinks.listen]).
   runApp(GrassrootsApp(links: InvitationLinks.listen()));
