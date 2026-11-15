@@ -93,6 +93,7 @@ Artefact    ::= String.
 Link        ::= String.
 Email       ::= String.
 Name        ::= String.
+Text        ::= String.
 
 %% A request: one alternative per request clause of serve --- trust, install,
 %% invite, Open place, Close place, Invite by link, the opening of a link,
@@ -110,7 +111,8 @@ Request ::= trust(CompilerKey)
           ; open_link(Link)
           ; list(Email, Name)
           ; list_unlisted(Email, Name)
-          ; unlist.
+          ; unlist
+          ; send(Friend, Text).
 
 %% The card of a friend who asks to connect: the friend, which the program
 %% writes for the person to see, and the person's answer, yes or no.
@@ -362,6 +364,9 @@ serve([close_place | Reqs], Id, Cd, Outs, Cmds?) :-
 serve([invite_link | Reqs], Id, Cd, Outs, Cmds?) :-
     ground(Id?) |
     place_act(invite_link, Id?, Cd?, Reqs?, Outs?, Cmds).
+serve([send(K, T) | Reqs], Id, Cd, Outs, [msg(person, Id?, send(K?, T?)) | Cmds?]) :-
+    ground(Id?), ground(K?), ground(T?) |
+    serve(Reqs?, Id?, Cd?, Outs?, Cmds).
 serve([open_link(L) | Reqs], Id, Cd, Outs, Cmds?) :-
     ground(Id?), ground(L?) |
     place_act(open_link(L?), Id?, Cd?, Reqs?, Outs?, Cmds).

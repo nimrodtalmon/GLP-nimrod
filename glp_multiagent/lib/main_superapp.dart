@@ -35,6 +35,7 @@ library;
 import 'dart:io' show Directory;
 
 import 'app_identity.dart' show installedApp;
+import 'chat_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:grassroots_networking/grassroots_networking.dart'
     show IdentityStore;
@@ -48,7 +49,6 @@ import 'manifests/superapp_ui.dart';
 import 'phone_network.dart';
 import 'scripted_person.dart';
 import 'superapp_host.dart';
-import 'ui_runtime/agent_surface.dart';
 import 'ui_runtime/look.dart';
 import 'ui_runtime/plain_look.dart';
 
@@ -82,7 +82,7 @@ class GrassrootsApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Grassroots',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true),
+        theme: chatTheme(),
         home: GrassrootsScreen(script: script, links: links),
       );
 }
@@ -123,6 +123,9 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
 
   /// The look of the Grassroots App's contract, once read; null until then.
   ContractLook? _look;
+
+  /// The chat-first face (chat_shell.dart) and what it keeps on the phone.
+  ChatController? _chat;
 
   /// The app's own line, reported in a debuggable build.
   void _setStatus(String status) {
@@ -225,7 +228,11 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
           reportHost(reporter, host, screen);
         }
       }
+      final chat = ChatController(host.ui,
+          await ChatStore.open('${support.path}/chat_shell.json'), net.key.hex);
+      _chat = chat;
       host.ui.onChange = () {
+        chat.refresh();
         // A link the phone handed the app is sent once the request form is
         // on the screen (invitation_link.dart).
         widget.links?.deliver(host.ui.bridge);
@@ -296,6 +303,8 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
       final support = await getApplicationSupportDirectory();
       final agents = Directory('${support.path}/agents');
       if (await agents.exists()) await agents.delete(recursive: true);
+      await _chat?.store.wipe();
+      _chat = null;
       await IdentityStore.clearIdentity();
     } catch (e, stack) {
       _caught(e, stack);
@@ -311,47 +320,36 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
   @override
   Widget build(BuildContext context) {
     final host = _host;
-    // The person sees what the program draws (GSA paper, Appendix "The
-    // Operating System", "The person"); the app shows its own line only
-    // while the agent is not running, or where the layer or the agent fails.
-    return Scaffold(
-      body: SafeArea(
-        child: host == null
-            ? Center(
-                child: Text(_status,
-                    style: const TextStyle(color: Colors.grey)))
-            : Column(
-                children: [
-                  if (_status != 'Ready')
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      child: Text(_status,
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.grey)),
-                    ),
-                  Expanded(
-                    child: KeyedSubtree(
-                      key: _surface,
-                      child: _look == null
-                          ? AgentSurface(
-                              agentId: _persona,
-                              runtime: host.ui,
-                              selfKey: _net?.key.hex,
-                              onStartOver: _startOver)
-                          : Theme(
-                              data: _look!.theme(),
-                              child: AgentSurface(
-                                  agentId: _persona,
-                                  runtime: host.ui,
-                                  icon: _look!.icon,
-                                  selfKey: _net?.key.hex,
-                                  onStartOver: _startOver)),
-                    ),
-                  ),
-                ],
-              ),
-      ),
+    final chat = _chat;
+    // The chat-first face (chat_shell.dart); the app's own line while the
+    // agent is not running, or where the layer or the agent fails.
+    if (host == null || chat == null) {
+      return Scaffold(
+        body: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.forum_rounded, size: 56, color: Color(0xFF1E8C5A)),
+            const SizedBox(height: 16),
+            const Text('Grassroots',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(_status,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey)),
+            ),
+          ]),
+        ),
+      );
+    }
+    final warning = _status == 'Ready'
+        ? null
+        : _status.startsWith('Ready')
+            ? 'Turn on Bluetooth to meet people nearby.'
+            : _status;
+    return KeyedSubtree(
+      key: _surface,
+      child: ChatShell(c: chat, warning: warning, onStartOver: _startOver),
     );
   }
 }
