@@ -49,6 +49,10 @@ class ChatStore {
   int cursor = 0;
   String? first;
 
+  /// Whether the person's place is open (home's open_place), so that the
+  /// phone looks for people nearby and is seen by them.
+  bool placeOpen = false;
+
   ChatStore(this.file);
 
   static Future<ChatStore> open(String path) async {
@@ -66,6 +70,7 @@ class ChatStore {
             .forEach((k, v) => s.unread[k] = v as int);
         s.cursor = j['cursor'] as int? ?? 0;
         s.first = j['first'] as String?;
+        s.placeOpen = j['placeOpen'] as bool? ?? false;
       }
     } catch (_) {
       // A file that does not read starts the shell afresh.
@@ -87,6 +92,7 @@ class ChatStore {
         'unread': unread,
         'cursor': cursor,
         'first': first,
+        'placeOpen': placeOpen,
       }));
     } catch (_) {}
   }
@@ -147,7 +153,7 @@ class ChatController extends ChangeNotifier {
   void refresh() {
     _readNotices();
     _readConstructs();
-    _flush();
+    Timer.run(_flush);
     notifyListeners();
   }
 
@@ -189,6 +195,13 @@ class ChatController extends ChangeNotifier {
   void _flush() {
     final c = _requestConstruct;
     if (c == null) return;
+    // The place opens once the person has a name: from then on the phone
+    // looks for people nearby, and they see it.
+    if (!store.placeOpen && (store.myName ?? '').isNotEmpty) {
+      store.placeOpen = true;
+      store.save();
+      runtime.bridge.grant(c.id, const GList([]), const GAtom('open_place'));
+    }
     while (_queued.isNotEmpty) {
       runtime.bridge.grant(c.id, const GList([]), _queued.removeAt(0));
     }
@@ -196,7 +209,9 @@ class ChatController extends ChangeNotifier {
 
   void _grantSend(String key, String text) {
     _queued.add(GStruct('send', [GString(key), GString(text)]));
-    _flush();
+    // Never grant from inside the runtime's own change callback: the grant
+    // goes out on the next turn of the event loop.
+    Timer.run(_flush);
   }
 
   void _tellName(String key) {
@@ -292,6 +307,7 @@ class ChatController extends ChangeNotifier {
   void setName(String name) {
     store.myName = name.trim();
     store.save();
+    _flush();
     for (final f in store.friends) {
       _tellName(f);
     }
