@@ -109,3 +109,4 @@ Booking | Booking | Booking | booking | booking
 Meeting Rooms | Meeting Rooms | Meeting-Rooms | meeting_rooms | meeting_rooms
 Appointments | Appointments | Appointments | appointments | appointments
 Anonymous Rendezvous | Anonymous Rendezvous | Anonymous-Rendezvous | anonymous_rendezvous | anonymous_rendezvous
+Arbitration | Arbitration | Arbitration | arbitration | arbitration

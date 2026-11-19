@@ -1,0 +1,28 @@
+% Arbitration --- a proposed contract under a working name, by Nimrod Talmon with Claude, 2026-11-19: Ostrom's low-cost conflict resolution (Governing the Commons, 1990, design principle 6) for any organisation, of which Networked Organisation's Arbitration, over locked coins, is a special case.
+% Owner: GCE, Grassroots Contract Examples, Nimrod Talmon's, until Udi rules on the name and the owner.
+% Paper: GCE, Grassroots Contract Examples, in preparation
+% Extends: Organisation, GO's (programs/go), and through it Guardians, Friendship and Knowledge.
+% Last changed: 2026-11-19.
+% Schemas: printed by the Calculus's tools from the Logic pragmas; checked with calculus/tools/gcsas.py (commute yes; return yes; recover same) and relations.py (Arbitration extends Organisation: holds) at GLP 912c76b.
+Arbitration
+Arbitration extends Organisation.
+A *dispute* is between two participants of an organisation, and an *arbiter*, a role the bylaws name, rules on it. What a ruling does, a parameter of Arbitration, is said by a contract written from it.
+Alice, Bob and Carol are persons, Orga an organisation.
+1. ■ Raise: Alice, a participant of Orga, may raise her dispute with Bob, a participant of Orga, to Carol, an arbiter of Orga.
+2. ■ Rule: Carol may then rule on the dispute.
+Logic pragmas
+Arbitration extends Organisation.
+A *dispute* is between two participants of an organisation, and an *arbiter*, a role the bylaws name, rules on it. What a ruling does, a parameter of Arbitration, is said by a contract written from it.
+Alice, Bob and Carol are persons, Orga an organisation.
+1. ■ Raise: Alice may raise her dispute with Bob in Orga to Carol, provided Alice is a participant of Orga, Bob is a participant of Orga and Carol is an arbiter of Orga.
+2. ■ Rule: Carol may rule on the dispute of Alice and Bob in Orga.
+Logic pragmas.
+Vocabulary: w holds the dispute of x and y in z = dispute(w,x,y,z); w has ruled on the dispute of x and y in z = ruled(w,x,y,z).
+x is an arbiter of z: x holds the role Arbiter in z and z has x in the role Arbiter.
+After x raises x's dispute with y in z to w, which requires w does not hold the dispute of x and y in z: w holds the dispute of x and y in z.
+After w rules on the dispute of x and y in z: no longer w holds the dispute of x and y in z and w has ruled on the dispute of x and y in z.
+Interface pragmas
+Look: 🤝, governance
+Disputes: the disputes Alice holds as an arbiter, and those she has raised.
+Raise: Alice [Raise] <person> <arbiter>
+Rule: Carol [Rule]
