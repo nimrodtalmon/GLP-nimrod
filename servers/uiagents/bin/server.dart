@@ -31,7 +31,7 @@ import '../../../glp_multiagent/lib/ui_runtime/runtime.dart';
 import '../../../glp_multiagent/lib/ui_runtime/term.dart';
 
 const persons = ['alice', 'bob', 'carol', 'dave'];
-const apps = {'gsg', 'gsn'};
+const apps = {'gsg', 'gsn', 'app'};
 
 late final String programs;
 

@@ -1,0 +1,184 @@
+%% ---------------------------------------------------------------------------
+%% programs/apps/app --- the app of App, the Grassroots App, the home of the Grassroots Super-App (GSA's contract, programs/social/graph/App.txt and App.glp, adopted from the Calculus), compiled down the abstraction cascade from its act schemas: the canonical CVA platform vGLP's compiler prints from them, platform.vglp (vGLP, Section 3.2, Definition "Canonical CVA Platform"; Section 5.4, "The compilation"), compiled to GLP by the canonical compilation when the directory loads (vGLP, Section 6.3, "The canonical compilation").
+%%
+%% The directory is a program of its own, as programs/apps/gsg is: the platform and the mini-app entry miniapp/3 that wraps it (miniapp.glp, the copy every app holds).  It has no scripted person and no plays.
+%%
+%% The types of platform.vglp, written again for the declarations of this directory's modules, as programs/apps/gsg/self.glp writes Friendship's, each as the platform prints it, and those they name.
+%% ---------------------------------------------------------------------------
+
+Class ::=
+    establish(Peer)
+  ; acquaint(Peer, Peer)
+  ; introduce(Peer, Peer, Peer)
+  ; open_place(Peer)
+  ; close_place(Peer)
+  ; encounter(Peer, Peer)
+  ; befriend(Peer, Peer)
+  ; person_unfriend(Peer, Peer)
+  ; sign(Peer, Speech)
+  ; forward(Peer, Peer, Speech)
+  ; publish(Peer, Speech)
+  ; trust(Peer, Peer)
+  ; untrust(Peer, Peer)
+  ; offer(Peer, Peer, Speech, Peer)
+  ; install_own(Peer, Speech)
+  ; install(Peer, Speech, Peer)
+  ; invite(Peer, Peer, Speech, Peer)
+  ; leave(Peer, List(Peer), Speech, Peer)
+  ; enter(Peer, Peer)
+  ; make_guardian(Peer, Peer, Peer, List(Peer))
+  ; resign(Peer, Peer)
+  ; end_guardian(Peer, Peer, Peer, List(Peer))
+  ; guardian_unfriend(Peer, Peer)
+  ; ward_acquaint(Peer, Peer)
+  ; ward_befriend(Peer, Peer, Peer)
+  ; ward_end(Peer, Peer)
+  ; unfriend(Peer, Peer)
+  ; ward_unfriend(Peer, Peer, Peer)
+  ; wards_acquaint(Peer, Peer)
+  ; wards_befriend(Peer, Peer, Peer, Peer)
+  ; wards_of_one_guardian_befriend(Peer, Peer, Peer)
+  ; retire(Peer, Peer, List(Peer), List(Peer), List(Peer))
+  ; open_store(Peer, Peer)
+  ; list(Peer, Peer, Speech, Peer)
+  ; delist(Peer, Peer)
+  ; trust_store(Peer, Peer, Peer)
+  ; untrust_store(Peer, Peer)
+  ; install_from_store(Peer, Peer, Speech, Peer)
+  ; open_server(Peer, Peer)
+  ; sign_link(Peer, Constant, Peer)
+  ; invite_by_link(Peer, Peer, Constant)
+  ; use_link(Peer, Peer, Peer, Constant)
+  ; present(Peer, Peer, Peer)
+  ; match(Peer, Peer, Peer)
+  ; open_directory(Peer, Peer)
+  ; list_me(Peer, Peer, Constant, Constant)
+  ; list_me_unshown(Peer, Peer, Constant, Constant)
+  ; delist_me(Peer, Peer)
+  ; delist_me_unshown(Peer, Peer)
+  ; lookup(Peer, Peer)
+  ; lookup_by_address(Peer, Peer).
+Proposal ::=
+    establish(Peer)
+  ; acquaint(Peer, Peer)
+  ; introduce(Peer, Peer, Peer)
+  ; open_place(Peer)
+  ; close_place(Peer)
+  ; encounter(Peer, Peer)
+  ; befriend(Peer, Peer)
+  ; person_unfriend(Peer, Peer)
+  ; sign(Peer, Speech)
+  ; forward(Peer, Peer, Speech)
+  ; publish(Peer, Speech)
+  ; trust(Peer, Peer)
+  ; untrust(Peer, Peer)
+  ; offer(Peer, Peer, Speech, Peer)
+  ; install_own(Peer, Speech)
+  ; install(Peer, Speech, Peer)
+  ; invite(Peer, Peer, Speech, Peer)
+  ; leave(Peer, Speech, Peer)
+  ; enter(Peer, Peer)
+  ; make_guardian(Peer, Peer, Peer)
+  ; resign(Peer, Peer)
+  ; end_guardian(Peer, Peer, Peer)
+  ; guardian_unfriend(Peer, Peer)
+  ; ward_acquaint(Peer, Peer)
+  ; ward_befriend(Peer, Peer, Peer)
+  ; ward_end(Peer, Peer)
+  ; unfriend(Peer, Peer)
+  ; ward_unfriend(Peer, Peer, Peer)
+  ; wards_acquaint(Peer, Peer)
+  ; wards_befriend(Peer, Peer, Peer, Peer)
+  ; wards_of_one_guardian_befriend(Peer, Peer, Peer)
+  ; retire(Peer, Peer)
+  ; open_store(Peer, Peer)
+  ; list(Peer, Peer, Speech, Peer)
+  ; delist(Peer, Peer)
+  ; trust_store(Peer, Peer, Peer)
+  ; untrust_store(Peer, Peer)
+  ; install_from_store(Peer, Peer, Speech, Peer)
+  ; open_server(Peer, Peer)
+  ; sign_link(Peer, Constant, Peer)
+  ; invite_by_link(Peer, Peer, Constant)
+  ; use_link(Peer, Peer, Peer, Constant)
+  ; present(Peer, Peer, Peer)
+  ; open_directory(Peer, Peer)
+  ; list_me(Peer, Peer, Constant, Constant)
+  ; list_me_unshown(Peer, Peer, Constant, Constant)
+  ; delist_me(Peer, Peer)
+  ; delist_me_unshown(Peer, Peer)
+  ; lookup(Peer, Peer)
+  ; lookup_by_address(Peer, Peer).
+Request ::= propose(Proposal).
+Atom ::=
+    identity
+  ; person
+  ; knows(Peer)
+  ; open_place
+  ; nearby(Peer)
+  ; friend(Peer)
+  ; item(Speech)
+  ; program(Speech, Peer)
+  ; trusts_developer(Peer)
+  ; installed(Speech, Peer)
+  ; participant(Speech, Peer, Peer)
+  ; ward
+  ; has_guardian(Peer)
+  ; creator(Peer)
+  ; guardian(Peer)
+  ; retired
+  ; store
+  ; lists_program(Speech, Peer)
+  ; listing_signed(Speech, Peer, Peer)
+  ; trusts_store(Peer)
+  ; rendezvous_server
+  ; link(Constant, Peer)
+  ; registered(Constant, Peer)
+  ; spent(Constant, Peer)
+  ; expired(Constant)
+  ; address(Peer)
+  ; presented(Peer, Peer)
+  ; directory
+  ; lists_shown(Peer, Constant, Constant)
+  ; lists_unshown(Peer, Constant, Constant)
+  ; holds_link(Peer, Peer).
+Peer      ::= Key.
+Speech    ::= speech(Utterance, Peer).
+Utterance ::= utterance(String) ; program(Module) ; Speech.
+YesNo     ::= yes ; no.
+Reason    ::= declined ; unable ; unable(List(Atom), List(Atom)).
+Vote      ::= yes(Bindings) ; yes(Bindings, GAtoms) ; no(Reason).
+Decision  ::= commit(Binding) ; abort(Peer, Reason) ; yield.
+Rho       ::= one(Class) ; rho(Proposal) ; std(Constant).
+Names     ::= none ; request(Rho, Integer).
+Attempt   ::= attempt(Peer, Integer, Integer, Class, Names).
+Cargo     ::= start(Attempt) ; vote(Attempt, Vote) ; outcome(Attempt, Decision)
+            ; yield(Attempt) ; ready(Attempt) ; request(Rho, Integer).
+Content   ::= hello(Peer, Proposal) ; ihello(Peer) ; intro(Peer, Peer) ; cargo(Peer, Cargo).
+Net       ::= msg(Peer, Content).
+Asking    ::= Attempt ; hello(Peer, Proposal).
+Word      ::= text(String) ; person(Peer) ; named(String, Peer) ; valued(String, Number) ; held(Atom, Integer).
+CName     ::= community(Peer) ; dot(CName, Speech) ; dot_any(CName).
+Val       ::= p(Peer) ; s(Speech) ; c(CName) ; n(Integer) ; r(Real) ; i(Utterance) ; lv(Constant, Constant) ; any ; v(Constant).
+Vals      ::= [] ; [Val | Vals].
+GAtom     ::= g(Constant, Vals).
+GAtoms    ::= [] ; [GAtom | GAtoms].
+Approved  ::= Proposal.
+Output    ::= view(Key, List(Atom), List(Key), List(Approved), List(Tab)) ; refused(Approved, Key, Reason) ; trust(TrustLevel).
+Tab       ::= tab(String, Constant) ; tab(String, Constant, Constant).
+Bind      ::= b(Var, Val).
+Binding   ::= [] ; [Bind | Binding].
+Bindings  ::= [] ; [Binding | Bindings].
+Approval ::= approval(Asking, List(Word), YesNo?).
+
+%% The network of the platform over the conversations (miniapp.glp), as programs/apps/gsg/self.glp writes it.
+NetEvent ::= opened(Key, RootChannel(Net)) ; sent(Net) ; declined(Key).
+Route    ::= route(Key, Stream(Net)?).
+Routes   ::= [] ; [Route | Routes].
+Sending  ::= went ; held(Net).
+HostEvent ::= t(TrustLevel) ; k(Key).
+
+%% The mini-app's entry, the instance of the root's entry template miniapp/3 (programs/self.glp) at the mini-app's two types: Drawn, what its dispatcher draws for its person, and Net, the messages of its root channels, the platform's network messages (miniapp.glp).
+imported procedure miniapp#miniapp(Key?, PersonChannel(Drawn)?, SgChannel(Net)?).
+exported procedure miniapp(Key?, PersonChannel(Drawn)?, SgChannel(Net)?).
+miniapp(Id, Ui, Sg) :- miniapp # miniapp(Id?, Ui?, Sg?).

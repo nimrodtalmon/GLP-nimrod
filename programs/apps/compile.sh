@@ -14,6 +14,7 @@
 #   gb     gb        programs/currencies/bonds/Bonds.glp
 #   dgc    denominated_currencies  programs/currencies/sovereign/Denominated-Currencies.glp
 #   gff    feeds       programs/gff/Feeds.glp     (GFF, adopted from the Calculus, which has no GFF-I: Udi, 2026-11-15, to GFF #6)
+#   app    app         programs/social/graph/App.glp  (the Grassroots App, the home of the super-app, adopted from the Calculus)
 #
 # The steps are cascade.sh's 1, 2 and 4: the contract, contract_named/2, from the owner's file; the checker's verdict on it, programs/gsc's check/2; and the compiler, programs/vglp/cva/compiler's compile/5, on the contract, its verdict, its introduction predicate, introduction_named/2 where the owner's file names one and no_introduction otherwise, and its pragmas, the words its app shows, read from the NAME.txt beside the owner's file and from those of the contracts it extends by programs/vglp/cva/compiler/pragmas.sh (vGLP, Section 5.4, "The contract's words"), each act the schema its button names (GSC, Section 2).  What the compiler prints between its lines "%% compile begin" and "%% compile end" is the platform.
 #
@@ -23,7 +24,7 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 GLP_DIR="$(cd "$HERE/../.." && pwd)"
 RT="$GLP_DIR/glp_runtime"
-APPS="gkk gsg gsn gsnp gai gc gb dgc gff"
+APPS="${COMPILE_APPS:-gkk gsg gsn gsnp gai gc gb dgc gff app}"
 
 contract_of() { # contract_of <app> ; the checker's name of its contract
     case "$1" in
@@ -36,6 +37,7 @@ contract_of() { # contract_of <app> ; the checker's name of its contract
         gb) echo bonds ;;
         dgc) echo denominated_currencies ;;
         gff) echo feeds ;;
+        app) echo app ;;
     esac
 }
 file_of() { # file_of <app> ; the owner's file that holds its contract
@@ -49,6 +51,7 @@ file_of() { # file_of <app> ; the owner's file that holds its contract
         gb) echo "$GLP_DIR/programs/currencies/bonds/Bonds.glp" ;;
         dgc) echo "$GLP_DIR/programs/currencies/sovereign/Denominated-Currencies.glp" ;;
         gff) echo "$GLP_DIR/programs/gff/Feeds.glp" ;;
+        app) echo "$GLP_DIR/programs/social/graph/App.glp" ;;
     esac
 }
 
