@@ -99,7 +99,20 @@ fi
                                    ../programs/apps/gsn; do
     printf ':artefact %s %s\n:quit\n' \
       "$prog" "../glp_multiagent/$DST/social/graph/core" | bin/glpc
-  done ) | grep -E '(✓ Wrote|Artefact failed|Error:)' || true
+  done ) > "$OUT/artefacts.log" 2>&1 || true
+grep -E '(✓ Wrote|Artefact failed|Error:)' "$OUT/artefacts.log" || true
+# The key each artefact is certified under, one line each, `<name>.glpw <key>`,
+# which the person trusts before installing it (home's request trust); the
+# app offers both on a button.
+sed -nE 's|.*/([a-z]+\.glpw) --- certified under ([0-9a-f]{64}).*|\1 \2|p' "$OUT/artefacts.log" \
+  > "$DST/social/graph/core/compiler_keys.txt" || true
+rm -f "$OUT/artefacts.log"
+
+# The UI structures and styles of the mini-apps (programs/gce/ui), compiled,
+# with their index by the name an app is installed under.
+for f in "$SRC"/gce/ui/*.ui.json "$SRC"/gce/ui/apps.json; do
+  [ -f "$f" ] && stage "${f#"$SRC"/}"
+done
 
 # The staged tree laid out flat, with its manifest (above): written before the
 # artefacts are asserted, so that a missing one leaves the rest of the bundle.

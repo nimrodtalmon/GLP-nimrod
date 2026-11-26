@@ -32,6 +32,8 @@
 /// `main_superapp_ui.dart`.
 library;
 
+import 'dart:io';
+
 import 'app_identity.dart' show installedApp;
 import 'package:flutter/material.dart';
 import 'package:glp_runtime/multiagent/agent_state_store.dart';
@@ -46,6 +48,8 @@ import 'scripted_person.dart';
 import 'superapp_host.dart';
 import 'ui_runtime/agent_surface.dart';
 import 'ui_runtime/apps_bar.dart';
+import 'ui_runtime/described.dart';
+import 'quick_acts.dart';
 import 'ui_runtime/look.dart';
 
 /// The persona's name in the seed of the agent's key pair, made once at the
@@ -116,6 +120,7 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
 
   /// The look of the Grassroots App's contract, once read; null until then.
   ContractLook? _look;
+  BundledApps _bundled = const BundledApps({}, {});
 
   /// The app's own line, reported in a debuggable build.
   void _setStatus(String status) {
@@ -177,6 +182,7 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
       // plain theme and is reported, and the agent starts all the same.
       try {
         _look = (await Looks.read(glp.rootSelfGlp)).of(superappContract);
+        _bundled = BundledApps.read(File(glp.rootSelfGlp).parent.path);
       } catch (e, stack) {
         _caught(e, stack);
       }
@@ -295,11 +301,19 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
                           style: const TextStyle(
                               fontSize: 11, color: Colors.grey)),
                     ),
+                  QuickActs(home: host.ui, apps: host.apps, bundled: _bundled),
                   if (host.apps.apps.isNotEmpty)
                     AppsBar(
                       screens: host.apps,
                       open: (app) => Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (_) => AppPage(app: app, screens: host.apps, look: _look))),
+                          builder: (_) => AppPage(
+                              app: app,
+                              screens: host.apps,
+                              look: _look,
+                              wrap: (name, surface) {
+                                final d = _bundled.descriptions[name];
+                                return d == null ? surface : DescribedUi(ui: d, child: surface);
+                              }))),
                     ),
                   Expanded(
                     child: KeyedSubtree(
