@@ -1,0 +1,8 @@
+name: uiagents_server
+description: Real GLP agents for the Grassroots UI layer's web demo - a world of persons, each the miniapp agent of a real app, whose state the demo's general renderer draws and whose acts it proposes.
+publish_to: none
+environment:
+  sdk: ^3.9.4
+dependencies:
+  glp_runtime:
+    path: ../../glp_runtime
