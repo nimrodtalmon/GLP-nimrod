@@ -904,6 +904,9 @@ class _DescribedScreenState extends State<DescribedScreen> {
 
   /// The routing rules the person chose ([DescribedScreen.rules]), and the one she is being asked about.
   late final ValueNotifier<Map<String, bool>> _rules = widget.rules ?? ValueNotifier(<String, bool>{});
+
+  /// The acts taken for the person by a rule of hers in this app.
+  final Set<String> _byRule = {};
   ({String schema, String label})? _rule;
 
   /// The lists the UI style tells of, on the screens about the person herself.
@@ -1231,6 +1234,20 @@ class _DescribedScreenState extends State<DescribedScreen> {
       if (comp.kind != 'action') continue;
       final act = c.act(comp);
       if (act != null) offered[i] = (act, c.ways(comp, act, subject));
+    }
+    // The routing rule, in an app the host opens: an act the person said yes to for each app she opens, offered
+    // here on the start screen with one way, herself, is taken for her, once.
+    if (name == ui.start) {
+      for (final e in offered.entries) {
+        final comp = comps[e.key].$1, act = e.value.$1, ways = e.value.$2;
+        if (_rules.value[comp.schema] == true && ways.length == 1 && c.fieldsOf(act, ways.single).isEmpty && _byRule.add(comp.schema)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _tap(comp, act, ways, subject);
+            _note('${comp.label}: done for you, as you asked');
+          });
+        }
+      }
     }
     // An important action not offered: in its place, what is in its way and the first step of a way to it, whose
     // button, where it is on this screen, is the hint's.  An action of the same label offered here is no gap.

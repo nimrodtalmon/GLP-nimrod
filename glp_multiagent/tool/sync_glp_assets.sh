@@ -71,6 +71,10 @@ stage social/graph/core/services.json
 # about.json, which holds a contract's icon and family until its owner writes
 # that line, staged beside programs/ at its place in the repository.
 stage apps/look.json
+# The descriptions of the mini-apps' screens, in the UI language of the Grassroots UI paper, compiled with
+# their contracts (programs/gce/ui): the phone draws an installed mini-app from its description where it has one.
+stage gce/ui/Friendship.ui.json
+stage gce/ui/Groups.ui.json
 while read -r f; do
   stage "${f#"$SRC"/}"
 done < <(grep -rl --include='*.txt' '^% Owner:' "$SRC" | sort)

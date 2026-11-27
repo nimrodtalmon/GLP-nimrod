@@ -32,6 +32,8 @@
 /// `main_superapp_ui.dart`.
 library;
 
+import 'dart:io';
+
 import 'app_identity.dart' show installedApp;
 import 'package:flutter/material.dart';
 import 'package:glp_runtime/multiagent/agent_state_store.dart';
@@ -46,6 +48,7 @@ import 'scripted_person.dart';
 import 'superapp_apps.dart';
 import 'superapp_host.dart';
 import 'ui_runtime/agent_surface.dart';
+import 'ui_runtime/described.dart';
 import 'ui_runtime/look.dart';
 
 /// The persona's name in the seed of the agent's key pair, made once at the
@@ -114,6 +117,12 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
   /// The person's screen, which a debuggable build reads as text.
   final GlobalKey _surface = GlobalKey();
 
+  /// The descriptions of the mini-apps' screens the app carries, by the mini-app's name.
+  final Map<String, UiDescription> _described = {};
+
+  /// The person's routing rules, kept across her mini-apps (DescribedScreen.rules).
+  final ValueNotifier<Map<String, bool>> _rules = ValueNotifier({});
+
   /// The look of the Grassroots App's contract, once read; null until then.
   ContractLook? _look;
 
@@ -172,6 +181,10 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
             {'mode': script.mode, 'known': script.known});
       }
       final glp = await resolveGlpPaths();
+      for (final (app, file) in const [('gsg', 'Friendship'), ('gsn', 'Groups')]) {
+        final f = File('${File(glp.rootSelfGlp).parent.path}/gce/ui/$file.ui.json');
+        if (f.existsSync()) _described[app] = UiDescription.parse(f.readAsStringSync());
+      }
       // The look the person's screen is drawn in, its contract's
       // ([superappContract]); a fault in reading it leaves the screen in the
       // plain theme and is reported, and the agent starts all the same.
@@ -299,6 +312,14 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
                       // (superapp_apps.dart).
                       child: SuperAppScreens(
                         host: host,
+                        // A mini-app with a description of its screens is drawn from it
+                        // (ui_runtime/described.dart), the person's rules kept across her apps.
+                        appScreen: (app, surface) {
+                          final d = _described[app.name];
+                          return d == null
+                              ? surface
+                              : DescribedUi(ui: d, rules: _rules, where: ['Grassroots', app.title], child: surface);
+                        },
                         home: _look == null
                             ? AgentSurface(agentId: _persona, runtime: host.ui)
                             : Theme(

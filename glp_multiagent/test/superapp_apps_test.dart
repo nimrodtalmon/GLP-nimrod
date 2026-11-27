@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glp_multiagent/superapp_apps.dart';
+import 'package:glp_multiagent/ui_runtime/described.dart';
 import 'package:glp_multiagent/manifests/superapp_ui.dart';
 import 'package:glp_multiagent/superapp_host.dart';
 import 'package:glp_multiagent/ui_runtime/bridge.dart';
@@ -303,5 +304,22 @@ void main() {
     expect(find.byKey(const ValueKey('superapp:invite:gsg')), findsOneWidget, reason: 'Bob is a friend');
     expect(find.byKey(const ValueKey('superapp:join:gsg')), findsOneWidget);
     expect(find.text('home'), findsNothing);
+  });
+
+  testWidgets('a mini-app with a description of its screens is drawn from it inside the super-app: '
+      'Friendship\'s screens, where the person is on top, and her friend Bob as a contact', (tester) async {
+    final d = UiDescription.parse(File('$programs/gce/ui/Friendship.ui.json').readAsStringSync());
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: SuperAppScreens(
+                host: alice.host,
+                home: const Text('home'),
+                appScreen: (app, surface) =>
+                    app.name == 'gsg' ? DescribedUi(ui: d, where: ['Grassroots', app.title], child: surface) : surface))));
+    await tester.tap(find.byKey(const ValueKey('superapp:tab:gsg')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(describedKey('help')), findsOneWidget, reason: 'the described screen');
+    expect(find.text('Grassroots'), findsOneWidget, reason: 'where the person is');
+    expect(find.byKey(describedKey('row:${formatTerm(GAtom(bob.key))}')), findsOneWidget, reason: 'Bob, whom she knows, a contact');
   });
 }
