@@ -181,7 +181,7 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
             {'mode': script.mode, 'known': script.known});
       }
       final glp = await resolveGlpPaths();
-      for (final (app, file) in const [('gsg', 'Friendship'), ('gsn', 'Groups')]) {
+      for (final (app, file) in const [('friendship', 'Friendship'), ('groups', 'Groups')]) {
         final f = File('${File(glp.rootSelfGlp).parent.path}/gce/ui/$file.ui.json');
         if (f.existsSync()) _described[app] = UiDescription.parse(f.readAsStringSync());
       }
@@ -314,11 +314,11 @@ class _GrassrootsScreenState extends State<GrassrootsScreen> {
                         host: host,
                         // A mini-app with a description of its screens is drawn from it
                         // (ui_runtime/described.dart), the person's rules kept across her apps.
-                        appScreen: (app, surface) {
-                          final d = _described[app.name];
+                        appScreen: (app, title, surface) {
+                          final d = _described[app];
                           return d == null
                               ? surface
-                              : DescribedUi(ui: d, rules: _rules, where: ['Grassroots', app.title], child: surface);
+                              : DescribedUi(ui: d, rules: _rules, where: ['Grassroots', title], child: surface);
                         },
                         home: _look == null
                             ? AgentSurface(agentId: _persona, runtime: host.ui)
